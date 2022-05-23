@@ -11,6 +11,7 @@ router.post('/users', async (req, res) => {
         res.status(400).send(error)
     }
 })
+
 router.get('/users', async (req, res) => {
     try {
         const users = await User.find({})
@@ -19,6 +20,7 @@ router.get('/users', async (req, res) => {
         res.status(500).send(error)
     }
 })
+
 router.get('/users/:id', async (req, res) => {
     const _id = req.params.id
     try {
@@ -31,9 +33,9 @@ router.get('/users/:id', async (req, res) => {
         res.status(500).send(error)
     }
 })
+
 router.patch('/users/:id', async (req, res)=>{
     const _id = req.params.id
-    const update = req.body
     const updatesKeys = Object.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
     const isValidUpdate = updatesKeys.every((field)=> allowedUpdates.includes(field))
@@ -42,7 +44,10 @@ router.patch('/users/:id', async (req, res)=>{
         return res.status(400).send({ error: 'updates not allowed'})
     }
     try {
-        const user = await User.findByIdAndUpdate(_id, update, { new: true, runValidators: true})
+
+        const user = await User.findById(_id)
+        updatesKeys.forEach(update => user[update] = req.body[update])
+        await user.save()
         if(!user){
             return res.status(404).send('No such user')
         }
@@ -51,6 +56,7 @@ router.patch('/users/:id', async (req, res)=>{
         res.status(400).send(error)
     }
 })
+
 router.delete('/users/:id', async (req, res)=>{
     try {
         const user = await User.findByIdAndDelete(req.params.id)
@@ -62,6 +68,5 @@ router.delete('/users/:id', async (req, res)=>{
         res.status(500).send()
     }
 })
-
 
 module.exports = router

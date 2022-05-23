@@ -22,16 +22,15 @@ router.get('/tasks', async (req, res) => {
 })
 
 router.get('/tasks/:id', async (req, res) => {
-    const id = req.params.id
-    Task.findById(id).then((result) => {
-        if(!result){
-            return res.status(404).send(result)
+    const _id = req.params.id
+    try {
+        const task = await Task.findById(_id)
+        if(!task){
+            return res.status(404).send()
         }
-        res.send(result)
-    }).catch((err) => {
-        res.status(500).send(err)
-    });
+    } catch (error) {
+        res.status(500).send(error)
+    }
 })
-
 
 module.exports = router
