@@ -20,14 +20,6 @@ const taskSchema = mongoose.Schema({
     timestamps: true
 })
 
-taskSchema.statics.getCompletedStatus = async (query) => {
-    if(query.completed === undefined){
-        return undefined
-    } 
-    const isCompleted = await query.completed === 'true'
-    return isCompleted
-}
-
 const Task = mongoose.model('Task', taskSchema)
 
 module.exports = Task

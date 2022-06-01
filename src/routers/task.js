@@ -18,18 +18,20 @@ router.post('/tasks', auth, async (req, res) =>{
 })
 
 // GET /tasks?completed=true
-// slice is pagination from moongose 
+
 router.get('/tasks', auth, async (req, res) => {
+    const match = {}
+
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true'
+    }
+
     try {
-        const owner = req.user._id
-        const isCompleted = await Task.getCompletedStatus(req.query)
-        if(isCompleted === undefined){
-            const allTasks = await (await Task.find({owner})).slice(0,2)
-            res.send(allTasks)
-        } else {
-            const tasks = await Task.find({owner, completed: isCompleted})
-            res.send(tasks)
-        }
+        await req.user.populate({
+            path: 'tasks',
+            match
+        }).execPopulate()
+        res.send(req.user.tasks)
     } catch (e) {
         res.status(500).send()
     }
