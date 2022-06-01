@@ -5,3 +5,5 @@ npm run dev
 
 password: npm i bcryptjs
 
+Authorization : Bearer <token>
+
